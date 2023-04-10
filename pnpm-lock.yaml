@@ -7,6 +7,7 @@ importers:
       '@commitlint/cli': ^17.3.0
       '@commitlint/config-conventional': ^17.3.0
       '@rollup/plugin-commonjs': ^23.0.2
+      '@rollup/plugin-replace': ^5.0.1
       '@typescript-eslint/eslint-plugin': ^5.44.0
       '@typescript-eslint/parser': ^5.44.0
       commitlint: ^17.3.0
@@ -24,6 +25,7 @@ importers:
       '@commitlint/cli': 17.3.0
       '@commitlint/config-conventional': 17.3.0
       '@rollup/plugin-commonjs': 23.0.2_rollup@3.5.0
+      '@rollup/plugin-replace': 5.0.1_rollup@3.5.0
       '@typescript-eslint/eslint-plugin': 5.44.0_fnsv2sbzcckq65bwfk7a5xwslu
       '@typescript-eslint/parser': 5.44.0_hsf322ms6xhhd4b5ne6lb74y4a
       commitlint: 17.3.0
@@ -37,6 +39,21 @@ importers:
       rollup-plugin-generate-package-json: 3.2.0_rollup@3.5.0
       rollup-plugin-typescript2: 0.34.1_thigodkhmbmbgju2inwjpgoskq
       typescript: 4.9.3
+
+  packages/react:
+    specifiers:
+      shared: workspace:*
+    dependencies:
+      shared: link:../shared
+
+  packages/react-reconciler:
+    specifiers:
+      shared: workspace:*
+    dependencies:
+      shared: link:../shared
+
+  packages/shared:
+    specifiers: {}
 
 packages:
 
@@ -324,6 +341,20 @@ packages:
       estree-walker: 2.0.2
       glob: 8.0.3
       is-reference: 1.2.1
+      magic-string: 0.26.7
+      rollup: 3.5.0
+    dev: true
+
+  /@rollup/plugin-replace/5.0.1_rollup@3.5.0:
+    resolution: {integrity: sha512-Z3MfsJ4CK17BfGrZgvrcp/l6WXoKb0kokULO+zt/7bmcyayokDaQ2K3eDJcRLCTAlp5FPI4/gz9MHAsosz4Rag==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0||^3.0.0
+    peerDependenciesMeta:
+      rollup:
+        optional: true
+    dependencies:
+      '@rollup/pluginutils': 5.0.2_rollup@3.5.0
       magic-string: 0.26.7
       rollup: 3.5.0
     dev: true

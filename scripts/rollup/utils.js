@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import typescript from 'rollup-plugin-typescript2';
 import commonjs from '@rollup/plugin-commonjs';
+import replace from '@rollup/plugin-replace';
 
 // 子包的路径
 const packagesPath = path.resolve(__dirname, '../../packages');
@@ -33,6 +34,9 @@ export function getPackageJSON(pkgName) {
   return JSON.parse(fs.readFileSync(pkgJSONPath, 'utf-8'));
 }
 
-export function getBaseRollupPlugins({ typescriptOpts = {} } = {}) {
-  return [commonjs(), typescript(typescriptOpts)];
+export function getBaseRollupPlugins({
+  alias = { __DEV__: true },
+  typescriptOpts = {}
+} = {}) {
+  return [replace(alias), commonjs(), typescript(typescriptOpts)];
 }
