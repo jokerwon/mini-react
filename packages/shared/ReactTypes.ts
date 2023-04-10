@@ -12,3 +12,6 @@ export interface ReactElementType {
   props: Props;
   __mark: string;
 }
+
+// setState 的入参
+export type Action<State> = State | ((prevState: State) => State);
