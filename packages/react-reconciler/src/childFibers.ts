@@ -12,6 +12,7 @@ function ChildReconciler(shouldTrackEffects: boolean) {
   ) {
     // 根据 ReactElement 创建 Fiber
     const fiber = createFiberFromElement(element);
+    // 与父节点建立连接
     fiber.return = returnFiber;
     return fiber;
   }
@@ -22,10 +23,12 @@ function ChildReconciler(shouldTrackEffects: boolean) {
   ) {
     // 根据 ReactElement 创建 Fiber
     const fiber = new FiberNode(HostText, { content }, null);
+    // 与父节点建立连接
     fiber.return = returnFiber;
     return fiber;
   }
 
+  // 添加 Placement flag
   function placeSingleChild(fiber: FiberNode) {
     if (shouldTrackEffects && fiber.alternate === null) {
       // fiber.alternate === null 说明是首屏渲染

@@ -13,7 +13,7 @@ export const completeWork = (wip: FiberNode) => {
 
   switch (wip.tag) {
     case HostComponent:
-      if (current !== null && wip.stateNode) {
+      if (current !== null && wip.stateNode !== null) {
         // update
       } else {
         // mount
@@ -78,6 +78,8 @@ function appendAllChildren(parent: FiberNode, wip: FiberNode) {
   }
 }
 
+// 将子树的 flags 冒泡到根树
+// 每次 competeWork 执行都会将 flags 一层层向上传递
 function bubbleProperties(wip: FiberNode) {
   let subtreeFlags = NoFlags;
   let child = wip.child;
@@ -86,6 +88,7 @@ function bubbleProperties(wip: FiberNode) {
     subtreeFlags |= child.subtreeFlags;
     subtreeFlags |= child?.flags;
 
+    // TODO: why repeat linking?
     child.return = wip;
     child = child.sibling;
   }

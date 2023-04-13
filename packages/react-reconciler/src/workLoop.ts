@@ -7,6 +7,7 @@ let workInProgress: FiberNode | null = null;
 
 function prepareFreshStack(root: FiberRootNode) {
   // root.current => hostRootFiber
+  // 创建 hostRootFiber
   workInProgress = createWorkInProgress(root.current, {});
 }
 
@@ -51,7 +52,8 @@ function renderRoot(root: FiberRootNode) {
   const finishedWork = root.current.alternate;
   root.finishedWork = finishedWork;
 
-  commitRoot(root);
+  // TODO
+  // commitRoot(root);
 }
 
 function workLoop() {
@@ -78,10 +80,12 @@ function completeUnitOfWork(fiber: FiberNode) {
     completeWork(node);
     const sibling = node.sibling;
 
+    // 如果有兄弟节点，就直接跳出 completeUnitOfWork，等待调度兄弟节点的 beginWork
     if (sibling !== null) {
       workInProgress = sibling;
       return;
     }
+    // 继续向上的过程，执行父节点的 completeWork
     node = node.return;
     workInProgress = node;
   } while (node !== null);
