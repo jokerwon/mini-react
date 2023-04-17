@@ -84,7 +84,7 @@ function appendPlacementNodeIntoContainer(
 ) {
   // finishedWork 有可能不是 HostComponent | HostText，不存在对应的真实 DOM，需要遍历查找到其第一个 HostComponent 的子节点
   if (finishedWork.tag === HostComponent || finishedWork.tag === HostText) {
-    appendChildToContainer(finishedWork.stateNode, hostParent);
+    appendChildToContainer(hostParent, finishedWork.stateNode);
     return;
   }
   const child = finishedWork.child;

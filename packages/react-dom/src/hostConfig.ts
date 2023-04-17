@@ -13,8 +13,8 @@ export const createTextInstance = (content: string) => {
 };
 
 export const appendInitialChild = (
-  child: Instance,
-  parent: Instance | Container
+  parent: Instance | Container,
+  child: Instance
 ) => {
   parent.appendChild(child);
 };
