@@ -60,9 +60,9 @@ export const jsx = (type: ElementType, config: any, ...maybeChildren: any) => {
         props.children = maybeChildren;
       }
     }
-
-    return ReactElement(type, key, ref, props);
   }
+
+  return ReactElement(type, key, ref, props);
 };
 
 export const jsxDEV = (type: ElementType, config: any) => {
@@ -90,7 +90,7 @@ export const jsxDEV = (type: ElementType, config: any) => {
     if ({}.hasOwnProperty.call(config, prop)) {
       props[prop] = val;
     }
-
-    return ReactElement(type, key, ref, props);
   }
+
+  return ReactElement(type, key, ref, props);
 };
