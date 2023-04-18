@@ -1,8 +1,10 @@
 import React from 'react';
+import { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 
 function App() {
-  return <div>Hello World</div>;
+  const [num] = useState(10);
+  return <div>{num}</div>;
 }
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
