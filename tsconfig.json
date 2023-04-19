@@ -20,5 +20,6 @@
     "paths": {
       "hostConfig": ["./react-dom/src/hostConfig.ts"]
     }
-  }
+  },
+  "include": ["./packages/**/*"]
 }

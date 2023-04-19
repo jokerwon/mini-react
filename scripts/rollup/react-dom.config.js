@@ -10,17 +10,18 @@ const pkgPath = resolvePkgPath(name);
 const pkgDistPath = resolvePkgPath(name, true);
 
 export default defineConfig([
+  // react-dom
   {
     input: `${pkgPath}/${module}`,
     output: [
       {
         file: `${pkgDistPath}/index.js`,
-        name: 'react-dom',
+        name: 'reactDOM',
         format: 'umd'
       },
       {
         file: `${pkgDistPath}/client.js`,
-        name: 'react-dom',
+        name: 'client',
         format: 'umd'
       }
     ],
@@ -47,5 +48,19 @@ export default defineConfig([
         })
       })
     ]
+  },
+  // react-test-utils
+  {
+    input: `${pkgPath}/test-utils.ts`,
+    output: [
+      {
+        file: `${pkgDistPath}/test-utils.js`,
+        name: 'test-utils',
+        format: 'umd'
+      }
+    ],
+    // 避免将 react 等代码打包进来
+    external: ['react-dom', 'react'],
+    plugins: getBaseRollupPlugins()
   }
 ]);
