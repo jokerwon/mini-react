@@ -7,7 +7,11 @@ import {
   HostText
 } from './workTags';
 import { appendInitialChild } from 'hostConfig';
-import { NoFlags } from './FiberFlags';
+import { NoFlags, Update } from './FiberFlags';
+
+function markUpdate(fiber: FiberNode) {
+  fiber.flags |= Update;
+}
 
 // 递归中的归阶段
 // - 构建离屏DOM树
@@ -33,6 +37,11 @@ export const completeWork = (wip: FiberNode) => {
     case HostText:
       if (current !== null && wip.stateNode) {
         // update
+        const oldText = current.memoizedProps.content;
+        const newText = newProps.content;
+        if (oldText !== newText) {
+          markUpdate(wip);
+        }
       } else {
         // mount
         // 构建DOM
