@@ -105,7 +105,11 @@ const commitUpdate = (finishedWork: FiberNode) => {
 
 const commitDeletion = (childToDelete: FiberNode) => {
   let rootHostNode: FiberNode | null = null;
-  // 递归子树
+  // 递归子树，并找到需要删除节点的根 DOM 节点
+  // function Child() {
+  //   return <div> <span>Hello</span>  </div>
+  // }
+  // rootHostNode 最终会指向 div 节点
   commitNestedComponent(childToDelete, (unmountFiber) => {
     switch (unmountFiber.tag) {
       case HostComponent:
@@ -120,7 +124,7 @@ const commitDeletion = (childToDelete: FiberNode) => {
         }
         return;
       case FunctionComponent:
-        // TODO: useEffect unmount
+        // TODO: useEffect unmount，解绑 ref
         return;
       default:
         if (__DEV__) {
@@ -133,7 +137,7 @@ const commitDeletion = (childToDelete: FiberNode) => {
   if (rootHostNode !== null) {
     const hostParent = getHostParent(childToDelete);
     if (hostParent !== null) {
-      removeChild(childToDelete.stateNode, hostParent);
+      removeChild((rootHostNode as FiberNode).stateNode, hostParent);
     }
   }
   childToDelete.return = null;
