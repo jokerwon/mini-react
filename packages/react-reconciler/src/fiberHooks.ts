@@ -1,6 +1,6 @@
 import internals from 'shared/internals';
 import { FiberNode } from './fiber';
-import { Dispatch, Dispatcher } from 'react/src/currentDIspatcher';
+import { Dispatch, Dispatcher } from 'react/src/currentDispatcher';
 import {
   UpdateQueue,
   createUpdate,
