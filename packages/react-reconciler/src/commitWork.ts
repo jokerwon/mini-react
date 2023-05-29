@@ -1,5 +1,6 @@
-import {
+import insertChildToContainer, {
   Container,
+  Instance,
   appendChildToContainer,
   commitTextUpdate,
   removeChild
@@ -82,9 +83,13 @@ const commitPlacement = (finishedWork: FiberNode) => {
   }
   // parent DOM
   const hostParent = getHostParent(finishedWork);
-  // finishedWork ==> hostParent
+
+  // host sibling
+  const sibling = getHostSibling(finishedWork);
+
   if (hostParent !== null) {
-    appendPlacementNodeIntoContainer(finishedWork, hostParent);
+    // 将 finishedWork 挂载到 hostParent
+    insertOrAppendPlacementNodeIntoContainer(finishedWork, hostParent, sibling);
   }
 };
 
@@ -193,22 +198,84 @@ function getHostParent(fiber: FiberNode): Container | null {
   return null;
 }
 
-function appendPlacementNodeIntoContainer(
+function getHostSibling(fiber: FiberNode) {
+  let node: FiberNode = fiber;
+
+  findSibling: while (true) {
+    /**
+     * // 情况2
+     * <App/><div/>
+     * function App() {
+     *   return <A/>;
+     * }
+     */
+    while (node.sibling === null) {
+      // 向上查找
+      const parent = node.return;
+
+      if (
+        parent === null ||
+        parent.tag === HostComponent ||
+        parent.tag === HostText
+      ) {
+        return null;
+      }
+      node = parent;
+    }
+
+    node.sibling.return = node.return;
+    node = node.sibling;
+
+    /**
+     * 情况1
+     * <A/><B/>
+     * function B() {
+     *   return <div/>;
+     * }
+     */
+    while (node.tag !== HostText && node.tag !== HostComponent) {
+      // 向下查找
+      if ((node.flags & Placement) !== NoFlags) {
+        // 说明该节点会被移动，不稳定，不能当作插入参照节点
+        continue findSibling;
+      }
+      if (node.child === null) {
+        // 说明 sibling 的这颗子树没有符合条件的节点
+        continue findSibling;
+      } else {
+        // 继续向下遍历
+        node.child.return = node;
+        node = node.child;
+      }
+    }
+
+    if ((node.flags & Placement) === NoFlags) {
+      return node.stateNode;
+    }
+  }
+}
+
+function insertOrAppendPlacementNodeIntoContainer(
   finishedWork: FiberNode,
-  hostParent: Container
+  hostParent: Container,
+  before?: Instance
 ) {
-  // finishedWork 有可能不是 HostComponent | HostText，不存在对应的真实 DOM，需要遍历查找到其第一个 HostComponent 的子节点
   if (finishedWork.tag === HostComponent || finishedWork.tag === HostText) {
-    appendChildToContainer(hostParent, finishedWork.stateNode);
+    if (before) {
+      insertChildToContainer(finishedWork.stateNode, hostParent, before);
+    } else {
+      appendChildToContainer(hostParent, finishedWork.stateNode);
+    }
     return;
   }
+  // finishedWork 有可能不是 HostComponent | HostText，不存在对应的真实 DOM，需要遍历查找到其第一个 HostComponent 的子节点
   const child = finishedWork.child;
   if (child !== null) {
-    appendPlacementNodeIntoContainer(child, hostParent);
+    insertOrAppendPlacementNodeIntoContainer(child, hostParent);
 
     let sibling = child.sibling;
     while (sibling !== null) {
-      appendPlacementNodeIntoContainer(sibling, hostParent);
+      insertOrAppendPlacementNodeIntoContainer(sibling, hostParent);
       sibling = sibling.sibling;
     }
   }
