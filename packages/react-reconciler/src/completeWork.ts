@@ -2,6 +2,7 @@ import { updateFiberProps } from 'react-dom/src/SyntheticEvent';
 import { Container, createInstance, createTextInstance } from 'hostConfig';
 import { FiberNode } from './fiber';
 import {
+  Fragment,
   FunctionComponent,
   HostComponent,
   HostRoot,
@@ -54,13 +55,11 @@ export const completeWork = (wip: FiberNode) => {
       }
       bubbleProperties(wip);
       return null;
-    case FunctionComponent:
-      bubbleProperties(wip);
-      return null;
     case HostRoot:
+    case FunctionComponent:
+    case Fragment:
       bubbleProperties(wip);
       return null;
-
     default:
       if (__DEV__) {
         console.warn('completeWork', 'unimplemented tag');

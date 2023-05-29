@@ -108,8 +108,26 @@ const commitUpdate = (finishedWork: FiberNode) => {
   }
 };
 
+function recordHostChildrenToDelete(
+  childrenToDelete: FiberNode[],
+  unmountFiber: FiberNode
+) {
+  const lastOne = childrenToDelete[childrenToDelete.length - 1];
+  if (!lastOne) {
+    childrenToDelete.push(unmountFiber);
+  } else {
+    let node = lastOne.sibling;
+    while (node !== null) {
+      if (unmountFiber === node) {
+        childrenToDelete.push(unmountFiber);
+      }
+      node = node.sibling;
+    }
+  }
+}
+
 const commitDeletion = (childToDelete: FiberNode) => {
-  let rootHostNode: FiberNode | null = null;
+  const rootChildrenToDelete: FiberNode[] = [];
   // 递归子树，并找到需要删除节点的根 DOM 节点
   // function Child() {
   //   return <div> <span>Hello</span>  </div>
@@ -118,15 +136,11 @@ const commitDeletion = (childToDelete: FiberNode) => {
   commitNestedComponent(childToDelete, (unmountFiber) => {
     switch (unmountFiber.tag) {
       case HostComponent:
-        if (rootHostNode === null) {
-          rootHostNode = unmountFiber;
-        }
+        recordHostChildrenToDelete(rootChildrenToDelete, unmountFiber);
         // TODO: 解绑 ref
         return;
       case HostText:
-        if (rootHostNode === null) {
-          rootHostNode = unmountFiber;
-        }
+        recordHostChildrenToDelete(rootChildrenToDelete, unmountFiber);
         return;
       case FunctionComponent:
         // TODO: useEffect unmount，解绑 ref
@@ -139,10 +153,12 @@ const commitDeletion = (childToDelete: FiberNode) => {
     }
   });
   // 移除 rootHostNode 的 DOM
-  if (rootHostNode !== null) {
+  if (rootChildrenToDelete.length !== 0) {
     const hostParent = getHostParent(childToDelete);
     if (hostParent !== null) {
-      removeChild((rootHostNode as FiberNode).stateNode, hostParent);
+      rootChildrenToDelete.forEach((node) => {
+        removeChild(node.stateNode, hostParent);
+      });
     }
   }
   childToDelete.return = null;
